@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.6)
+
+set(INCLUDE_HEADERS
+	src/include/biomq_ecode.h
+	src/include/biomq_sys_topic.h
+	src/include/biomq_def.h
+	src/include/biomq_msg.h
+	src/include/biomq_pubsub.h
+	src/include/biomq.h
+)
