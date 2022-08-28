@@ -32,6 +32,8 @@
 #include <vector>
 #include <queue>
 #include <map>
+#include <list>
+#include <workflow/list.h>
 #include "biomq_def.h"
 #include "biomq_ecode.h"
 #include "biomq_msg.h"
@@ -40,10 +42,7 @@ namespace bio {
 	
 namespace mq {
 
-typedef struct msg_list_s {
-	msg_list_s *prev;
-	msg_list_s *next;
-} msg_list_t;
+typedef struct list_head msg_list_t;
 
 // 双向链表消息
 typedef struct {
@@ -52,15 +51,9 @@ typedef struct {
 } msg_data_cached_t;
 
 // 该链表使用过期时间排序，无时间的直接插入末尾，最快要过期的放在前方
-typedef struct {
-	// 队列节点
-	msg_list_t node;
-	// 记录的数据节点
-	msg_list_t *data;
-} msg_data_time_series_t;
-
+using MsgDataTimeSeries = std::list<msg_list_t*>;
 // topic->msg_list node
-using MsgCachedMap = std::map<std::string, std::queue<msg_list_t*>>;
+using MsgCachedMap = std::map<std::string, std::list<msg_list_t*>>;
 
 typedef struct {
 	uint64_t max_topic;
@@ -91,10 +84,10 @@ public:
 private:
 	// topic映射
 	MsgCachedMap map_;
+	// 时间序列
+	MsgDataTimeSeries time_series_;
 	// 缓存队列
 	msg_data_cached_t msg_;
-	// 时间序列
-	msg_data_time_series_t time_series_;
 
 	// 消息条数计数
 	uint64_t msg_cnt_;

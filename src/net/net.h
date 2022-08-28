@@ -17,33 +17,15 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file biomq_ecode.h
+ * @file net.h
  * @brief 
  * @author Jerry.Yu (jerry.yu512outlook.com)
  * @version 1.0.0
- * @date 2022-08-21
+ * @date 2022-08-27
  * 
  * @copyright MIT License
  * 
  */
 #pragma once
 
-namespace bio {
-	
-namespace mq {
-
-// 错误码
-typedef enum {
-	MSG_ECODE_OK = 0,
-	MSG_ECODE_NODE_OVER_MAX = 1,
-	MSG_ECODE_NODE_EXISTED = 2,
-	MSG_ECODE_NODE_LITSEN = 3,
-
-	MSG_ECODE_INVALID_MEM = 0x1000,
-
-	MSG_ECODE_NET_URL_ERROR = 0x2000,
-} MsgEcode;
-	
-} // namespace bio
-
-} // namespace bio
+// send

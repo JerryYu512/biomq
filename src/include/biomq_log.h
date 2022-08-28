@@ -17,33 +17,49 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file biomq_ecode.h
+ * @file biomq_log.h
  * @brief 
  * @author Jerry.Yu (jerry.yu512outlook.com)
  * @version 1.0.0
- * @date 2022-08-21
+ * @date 2022-08-28
  * 
  * @copyright MIT License
  * 
  */
 #pragma once
+#include <functional>
+#include <string>
+#include <stddef.h>
 
 namespace bio {
 	
 namespace mq {
 
-// 错误码
+// 日志等级
 typedef enum {
-	MSG_ECODE_OK = 0,
-	MSG_ECODE_NODE_OVER_MAX = 1,
-	MSG_ECODE_NODE_EXISTED = 2,
-	MSG_ECODE_NODE_LITSEN = 3,
+	LOG_NON,
+	LOG_DEBUG,
+	LOG_TRACE,
+	LOG_INFO,
+	LOG_WARN,
+	LOG_ERROR,
+} LOG_LV;
 
-	MSG_ECODE_INVALID_MEM = 0x1000,
+using log_cb = std::function<void(LOG_LV lv, const char* filename, const char* func, int line, const char* msg)>;
 
-	MSG_ECODE_NET_URL_ERROR = 0x2000,
-} MsgEcode;
-	
+/**
+ * @brief 注册日志回调接口
+ * 
+ * @param cb 
+ */
+void log_redirect(log_cb cb);
+
+class MqLog {
+public:
+	static void log_init(LOG_LV def_lv=LOG_INFO, bool color_en=false, log_cb cb = nullptr);
+	static void set_log_level(LOG_LV lv);
+};
+
 } // namespace bio
 
 } // namespace bio

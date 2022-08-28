@@ -75,11 +75,16 @@ typedef struct {
 	std::vector<mq_msg_gc_midware_cb> msg_trush;
 } broker_node_midwares;
 
+// 节点类型
+typedef enum {
+	BROKER_NET,
+	BROKER_IPC,
+} BrokerNodeType;
+
 // 单个broker节点配置
 typedef struct {
-	// 同进程内local://
-	// 进程间ipc://
-	// 网络net://
+	// 进程间/内ipc://127.0.0.1:9001
+	// 网络net://0.0.0.0:9002
 	std::string url;
 	// 支持发布订阅的最大话题数
 	uint32_t max_topic;
@@ -97,12 +102,15 @@ typedef struct {
 
 class BrokerNodeImpl;
 class BrokerImpl;
+class Broker;
 
 // broker节点
 class BrokerNode {
 public:
 	BrokerNode(const broker_node_config_t& conf);
 	~BrokerNode();
+	friend class Broker;
+	friend class BrokerImpl;
 private:
 	BrokerNodeImpl *impl_;
 };
@@ -112,6 +120,10 @@ class Broker {
 public:
 	Broker(const broker_config_t& conf);
 	~Broker();
+
+	int start(void);
+	int stop(void);
+
 public:
 	MsgEcode create_node(const broker_node_config_t& conf, BrokerNode** node);
 

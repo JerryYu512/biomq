@@ -28,6 +28,9 @@
  */
 #pragma once
 #include <stdint.h>
+#include <stdlib.h>
+#include "workflow/ProtocolMessage.h"
+#include "workflow/WFTaskFactory.h"
 
 namespace bio {
 	
@@ -39,7 +42,7 @@ typedef struct {
 	uint32_t magic;
 	// 包编号
 	uint32_t seq;
-	// 长度，len之后的长度(整个数据流)
+	// 长度，整个包的长度(整个数据流)
 	uint64_t len;
 	// 校验码，checksum之后的crc32
 	uint32_t checksum;
@@ -136,6 +139,47 @@ typedef struct {
 	"status": "ok"
 }
 #endif
+
+class TransMessageRequest: public protocol::ProtocolMessage {
+private:
+	virtual int encode(struct iovec vectors[], int max);
+	virtual int append(const void *buf, size_t size);
+
+public:
+	int set_message_body(const void *body, size_t size);
+
+	void get_message_body_nocopy(void **body, size_t *size)
+	{
+		*body = this->payload;
+		*size = this->body_size;
+	}
+
+protected:
+	char head[sizeof(msg_protocol_header_t)];
+	size_t head_received;
+	char ext_header[sizeof(msg_protocol_ext_header_t)];
+	char mq_ext_header[sizeof(mq_msg_ext_header_t)];
+	char *json;
+	char *payload;
+	size_t body_received;
+	size_t body_size;
+
+public:
+	// TODO:数长度限制，内存分配接口
+	TransMessageRequest() {
+		this->head_received = 0;
+		this->payload = NULL;
+		this->body_size = 0;
+	}
+
+	TransMessageRequest(TransMessageRequest&& msg);
+	TransMessageRequest& operator=(TransMessageRequest&&msg);
+	virtual ~TransMessageRequest();
+};
+
+using TransMessageResponse = TransMessageRequest;
+
+using MQTask = WFNetworkTask<TransMessageRequest, TransMessageResponse>;
 	
 } // namespace mq
 
